@@ -20,8 +20,8 @@ class FirebaseModel
     public function __construct()
     {
         $factory = (new Factory)
-            ->withServiceAccount(env('FIREBASE_CREDENTIALS'))
-            ->withDatabaseUri(env('FIREBASE_DATABASE_URL'));
+            ->withServiceAccount("/var/www/html/Laravel_Gestion_Pedagogique/gestion-pedagogique/storage/app/firebase_credentiels.json")
+            ->withDatabaseUri("https://laravel-gestion-pedagogique-default-rtdb.firebaseio.com/");
 
         $this->database = $factory->createDatabase();
         $this->auth = $factory->createAuth();

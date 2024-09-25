@@ -18,7 +18,7 @@ services:
       DB_DATABASE: laravel_gestion_pedagogique
       DB_USERNAME: sididiop
       DB_PASSWORD: Toubakhayra
-      APP_PORT: ${PORT}  # Vérifiez que PORT est défini dans votre .env
+      APP_PORT: 8080  # Vérifiez que PORT est défini dans votre .env
     expose:
       - 8080  # Assurez-vous que votre application écoute sur ce port
 
@@ -31,7 +31,7 @@ services:
       - .:/var/www
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "${PORT}:80"  # Assurez-vous que PORT est défini
+      - "8080:80"  # Assurez-vous que PORT est défini
     depends_on:
       - app
     networks:
