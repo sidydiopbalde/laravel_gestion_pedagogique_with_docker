@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Exports\UserFirebaseExport;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ApprennantsFirebaseController extends Controller
@@ -60,7 +61,24 @@ class ApprennantsFirebaseController extends Controller
         return response()->json(['apprenants_inactifs' => $apprenantsInactifs]);
     }
 
-    
+    public function import(Request $request)
+    {
+        // Validation du fichier
+        // $request->validate([
+        //     'file' => 'required|file|mimes:xlsx,xls,csv',
+        //     'referentiel_id' => 'required|integer', // Ajoutez la validation pour le référentiel
+        // ]);
+        $file = $request->file('file');
+        $referentielId = $request->input('referentiel_id');
+
+        // Appel du service d'importation
+        $errorFilePath = $this->apprenantsFirebaseService->importApprenants($file, $referentielId);
+        
+        return response()->json([
+            'message' => 'Importation des apprenants réussie',
+            'error_file' => $errorFilePath ? Storage::url($errorFilePath) : null,
+        ]);
+    }
     
 
 }

@@ -98,6 +98,7 @@ Route::prefix('/v1/promotions')->group(function () {
 // Route::get('/v1/promotions/{id}/apprenants', [PromotionFirebaseController::class, 'getApprenants']);
 Route::prefix('/v1/apprenants')->group(function () {
 Route::post('/', [ApprennantsFirebaseController::class, 'store']);
+Route::post('/import', [ApprennantsFirebaseController::class, 'import']);
 Route::get('/', [ApprennantsFirebaseController::class, 'filterApprenants']);
 Route::get('/{id}', [ApprennantsFirebaseController::class, 'show']);
 // Route::post('/inactive', [ApprennantsFirebaseController::class, 'findApprenantInactif']);
