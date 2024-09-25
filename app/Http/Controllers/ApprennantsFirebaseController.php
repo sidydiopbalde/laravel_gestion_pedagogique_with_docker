@@ -22,7 +22,18 @@ class ApprennantsFirebaseController extends Controller
         $firebaseKey = $this->apprenantsFirebaseService->createApprenant($request->all());
         return response()->json(['message' => 'Apprenant créé avec succès', 'id' => $firebaseKey]);
     }
+    // public function import(Request $request)
+    // {
+    //     $request->validate([
+    //         'file' => 'required|file|mimes:xls,xlsx',
+    //         'referentiel_id' => 'required|exists:referentiels,id',
+    //     ]);
 
+    //     $file = $request->file('file');
+    //     $failedApprenantsFile = $this->apprenantsFirebaseService->importApprenants($file, $request->referentiel_id);
+
+    //     return response()->download($failedApprenantsFile)->deleteFileAfterSend(true);
+    // }
     public function index()
     {
         $apprenants = $this->apprenantsFirebaseService->getAllApprenants();

@@ -2,9 +2,16 @@
 
 namespace App\Services;
 
+use App\Exports\ApprenantsErreursExport;
 use App\Jobs\SendAuthEmailJob;
 use App\Repository\ApprenantsFirebaseRepository;
 use App\Repository\ReferentielFirebaseRepository;
+use App\Jobs\SendApprenantCredentials;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Endroid\QrCode\QrCode; 
+use SendApprenantCredentials as GlobalSendApprenantCredentials;
 
 class ApprenantsFirebaseService implements ApprenantsFirebaseServiceInterface
 {
@@ -74,16 +81,50 @@ class ApprenantsFirebaseService implements ApprenantsFirebaseServiceInterface
         }
     
         // Envoi de l'email d'authentification
-        $defaultPassword = 'default_password';
+        $defaultPassword = 'passer123';
         SendAuthEmailJob::dispatch("sididiop53@gmail.com", $defaultPassword, $userData['nom'], $userData['prenom'], $this->qrCodeService, $this->pdfService);
     
         return $firebaseKey; 
+    }
+    public function importApprenants($file, $referentielId)
+    {
+        $apprenants = Excel::toArray([], $file)[0]; // Assurez-vous que Maatwebsite/Laravel-Excel est installé
+
+        $failedApprenants = [];
+        
+        foreach ($apprenants as $data) {
+            $apprenant = $this->apprenantsRepository->create([
+                'nom' => $data['nom'],
+                'prenom' => $data['prenom'],
+                'date_naissance' => $data['date_naissance'],
+                'sexe' => $data['sexe'],
+                'email' => $data['email'],
+                'referentiel_id' => $referentielId,
+            ]);
+            $matricule = $this->generateMatricule();
+            $apprenant->matricule = $matricule;      
+            $qrCodePath = $this->qrCodeService->generateQrCode($apprenant->id, $apprenant->matricule);
+            $defaultPassword = 'defaultPassword123!'; 
+            GlobalSendApprenantCredentials::dispatch($apprenant, $defaultPassword);
+        }
+        return $this->createErrorFile($failedApprenants);
+    }
+
+
+    protected function createErrorFile($apprenantsAvecErreurs)
+    {
+        // Crée un fichier Excel avec les erreurs et stocke-le
+        $filePath = 'apprenants_erreurs.xlsx';
+        Excel::store(new ApprenantsErreursExport($apprenantsAvecErreurs), $filePath);
+
+        return Storage::path($filePath);
     }
 
     private function generateMatricule()
     {
         return 'MATRICULE_' . uniqid();
     }
+  
     
     public function findApprenantsById($id){
         return $this->apprenantsRepository->find($id);  // Retourne l'apprenant trouvé ou null si non trouvé
