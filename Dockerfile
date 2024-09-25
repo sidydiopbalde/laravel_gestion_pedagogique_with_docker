@@ -33,17 +33,19 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Exposer le port 9000 pour PHP-FPM
 EXPOSE 80
-EXPOSE 8080
+EXPOSE $PORT
 
 # Copie le script de démarrage
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # Lancer le script de démarrage quand le conteneur démarre
-CMD ["sh", "/usr/local/bin/start.sh"]
+# CMD ["sh", "/usr/local/bin/start.sh"]
 # Ajouter un healthcheck pour PHP-FPM
 # HEALTHCHECK --interval=30s --timeout=10s \
 #   CMD curl --fail http://localhost:8080 || exit 1
 
 # Démarrer PHP-FPM
 # CMD ["php-fpm"]
+# Commande pour démarrer l'application
+CMD php artisan serve --host=0.0.0.0 --port=$PORT
