@@ -8,7 +8,7 @@ services:
     container_name: app
     volumes:
       - .:/var/www
-      - ./config/firebase_credentiels.json:/var/www/html/Laravel_Gestion_Pedagogique/gestion-pedagogique/storage/app/firebase_credentiels.json
+      - ./storage/app/firebase_credentiels.json:/var/www/html/Laravel_Gestion_Pedagogique/gestion-pedagogique/storage/app/firebase_credentiels.json
     networks:
       - laravel
     environment:
